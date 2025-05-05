@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trendy Shop</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fdfdfd;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #ff7e5f, #feb47b);
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .hero {
+      padding: 40px 20px;
+      text-align: center;
+      background: #ffe8d6;
+    }
+    .btn {
+      background: #ff7e5f;
+      color: white;
+      padding: 10px 25px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #e86b50;
+    }
+    .product-container, .cart-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 30px;
+    }
+    .product, .cart-item {
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      transition: transform 0.2s ease-in-out;
+    }
+    .product:hover {
+      transform: scale(1.03);
+    }
+    .product img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    button {
+      background-color: #ff7e5f;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e86b50;
+    }
+    #cart-page {
+      display: none;
+    }
+    #total-price {
+      text-align: center;
+      font-size: 20px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    @media (max-width: 600px) {
+      .product-container, .cart-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🛍️ Trendy Shop</h1>
+  <nav>
+    <a href="#" onclick="showHome()">Home</a>
+    <a href="#" onclick="showProducts()">Products</a>
+    <a href="#" onclick="showCart()">Cart (<span id="cart-count">0</span>)</a>
+  </nav>
+</header>
+
+<!-- Home Section -->
+<section class="hero" id="home-page">
+  <h2>Welcome to Trendy Shop</h2>
+  <p>Stylish fashion and cool gadgets just a click away!</p>
+  <button class="btn" onclick="showProducts()">Start Shopping</button>
+</section>
+
+<!-- Product List -->
+<section id="product-page" style="display:none;">
+  <div class="product-container" id="product-list"></div>
+</section>
+
+<!-- Cart Page -->
+<section id="cart-page">
+  <div class="cart-container" id="cart-items"></div>
+  <div id="total-price">Total: ₹0</div>
+</section>
+
+<script>
+  const products = [
+    { id: 1, name: "T-Shirt", price: 499, image: "https://images.unsplash.com/photo-1600180758890-65e5f74b00f4" },
+    { id: 2, name: "Sneakers", price: 1299, image: "https://images.unsplash.com/photo-1618354691311-2b39d3343a4d" },
+    { id: 3, name: "Smartwatch", price: 1999, image: "https://images.unsplash.com/photo-1580927752452-89d86da3fa0a" },
+    { id: 4, name: "Backpack", price: 799, image: "https://images.unsplash.com/photo-1526178612165-2d155456b0cf" },
+    { id: 5, name: "Sunglasses", price: 599, image: "https://images.unsplash.com/photo-1592817971935-b8c3b7cf8a57" },
+    { id: 6, name: "Headphones", price: 1499, image: "https://images.unsplash.com/photo-1610415851591-17494d6f11a1" },
+    { id: 7, name: "Hoodie", price: 899, image: "https://images.unsplash.com/photo-1593032457866-8f006b183aa0" },
+    { id: 8, name: "Cap", price: 299, image: "https://images.unsplash.com/photo-1618354691411-3b81e244ebea" }
+  ];
+
+  const cart = [];
+
+  function showHome() {
+    document.getElementById("home-page").style.display = "block";
+    document.getElementById("product-page").style.display = "none";
+    document.getElementById("cart-page").style.display = "none";
+  }
+
+  function showProducts() {
+    document.getElementById("home-page").style.display = "none";
+    document.getElementById("product-page").style.display = "block";
+    document.getElementById("cart-page").style.display = "none";
+  }
+
+  function showCart() {
+    document.getElementById("home-page").style.display = "none";
+    document.getElementById("product-page").style.display = "none";
+    document.getElementById("cart-page").style.display = "block";
+    renderCart();
+  }
+
+  function renderProducts() {
+    const productList = document.getElementById("product-list");
+    productList.innerHTML = '';
+    products.forEach(product => {
+      const div = document.createElement("div");
+      div.className = "product";
+      div.innerHTML = `
+        <img src="${product.image}&w=400&h=300&fit=crop" alt="${product.name}">
+        <h3>${product.name}</h3>
+        <p>₹${product.price}</p>
+        <button onclick="addToCart(${product.id})">Add to Cart</button>
+      `;
+      productList.appendChild(div);
+    });
+  }
+
+  function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    const existing = cart.find(item => item.id === productId);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+    updateCartCount();
+    alert(`${product.name} added to cart!`);
+  }
+
+  function renderCart() {
+    const cartItems = document.getElementById("cart-items");
+    const totalPriceEl = document.getElementById("total-price");
+    cartItems.innerHTML = '';
+    let total = 0;
+    cart.forEach(item => {
+      total += item.price * item.quantity;
+      const div = document.createElement("div");
+      div.className = "cart-item";
+      div.innerHTML = `
+        <h4>${item.name}</h4>
+        <p>₹${item.price} × ${item.quantity}</p>
+        <button onclick="removeFromCart(${item.id})">Remove</button>
+      `;
+      cartItems.appendChild(div);
+    });
+    totalPriceEl.innerText = `Total: ₹${total}`;
+  }
+
+  function removeFromCart(productId) {
+    const index = cart.findIndex(item => item.id === productId);
+    if (index !== -1) {
+      cart.splice(index, 1);
+      updateCartCount();
+      renderCart();
+    }
+  }
+
+  function updateCartCount() {
+    document.getElementById("cart-count").innerText = cart.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
+  // Initial Load
+  renderProducts();
+</script>
+
+</body>
+</html>
